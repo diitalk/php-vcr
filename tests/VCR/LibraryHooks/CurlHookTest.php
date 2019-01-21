@@ -376,6 +376,32 @@ class CurlHookTest extends TestCase
         $this->curlHook->disable();
     }
 
+    public function testCurlSetoptArrayShouldReturnTrueIfOptionsAreSuccessful()
+    {
+        $this->curlHook->enable($this->getTestCallback());
+        $curlHandle = curl_init('http://example.com');
+        $this->assertTrue(curl_setopt_array(
+            $curlHandle,
+            [
+                CURLOPT_RETURNTRANSFER => true,
+            ]
+        ));
+        $this->curlHook->disable();
+    }
+
+    public function testCurlSetoptArrayShouldReturnFalseIfOptionsArentSuccessful()
+    {
+        $this->curlHook->enable($this->getTestCallback());
+        $curlHandle = curl_init('http://example.com');
+        $this->assertFalse(curl_setopt_array(
+            $curlHandle,
+            [
+                CURLOPT_HTTP_VERSION => 9999,
+            ]
+        ));
+        $this->curlHook->disable();
+    }
+
     protected function getTestCallback($statusCode = 200): Closure
     {
         $testClass = $this;
