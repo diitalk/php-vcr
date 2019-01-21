@@ -357,14 +357,19 @@ class CurlHook implements LibraryHook
      *
      * @param resource          $curlHandle a cURL handle returned by curl_init()
      * @param array<int, mixed> $options    an array specifying which options to set and their values
+     *
+     * @return bool Returns TRUE if all options were successfully set. If an option could not be successfully set,
+     *              FALSE is immediately returned, ignoring any future options in the options array.
      */
-    public static function curlSetoptArray($curlHandle, array $options): void
+    public static function curlSetoptArray($curlHandle, array $options): bool
     {
-        if (\is_array($options)) {
-            foreach ($options as $option => $value) {
-                static::curlSetopt($curlHandle, $option, $value);
+        foreach ($options as $option => $value) {
+            if (!static::curlSetopt($curlHandle, $option, $value)) {
+                return false;
             }
         }
+
+        return true;
     }
 
     /**
